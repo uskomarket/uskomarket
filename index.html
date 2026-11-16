@@ -1,0 +1,100 @@
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>USKOMARKET | USKO Pazar Takip</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#0b1020;color:#eef2ff;font-family:Arial,sans-serif}
+header{padding:22px 6%;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #252d42}
+.logo{font-size:25px;font-weight:900;letter-spacing:1px;color:#f6b83f}
+.logo span{color:white}
+.beta{font-size:11px;background:#473616;color:#ffd36b;padding:7px 11px;border-radius:20px}
+main{max-width:1150px;margin:45px auto;padding:0 20px}
+.hero{text-align:center;margin-bottom:35px}
+.hero h1{font-size:38px;margin:0 0 12px}
+.hero p{color:#9da9c2}
+.controls{display:flex;gap:12px;flex-wrap:wrap;margin:25px 0}
+input,select{background:#151d31;border:1px solid #303c56;color:white;padding:14px;border-radius:9px;min-width:170px;flex:1}
+.tabs{display:flex;gap:10px;margin:20px 0}
+.tabs button{padding:12px 25px;border:0;border-radius:8px;background:#202a40;color:white;cursor:pointer;font-weight:bold}
+.tabs button.active{background:#e4a72e;color:#171717}
+.summary{color:#9da9c2;margin-bottom:12px}
+table{width:100%;border-collapse:collapse;background:#121a2c;border-radius:12px;overflow:hidden}
+th,td{padding:17px 14px;text-align:left;border-bottom:1px solid #273149}
+th{color:#9da9c2;font-size:12px;text-transform:uppercase}
+td{font-size:14px}
+.price{color:#f6bd4b;font-weight:bold}
+.type{font-size:11px;padding:5px 8px;border-radius:5px;background:#183c32;color:#7be0b4}
+footer{text-align:center;color:#77839c;padding:35px}
+@media(max-width:650px){.hero h1{font-size:28px}table{font-size:12px}th,td{padding:12px 8px}.hide-mobile{display:none}}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">USKO<span>MARKET</span></div>
+  <div class="beta">BETA TEST SÜRÜMÜ</div>
+</header>
+<main>
+  <section class="hero">
+    <h1>USKO Pazarını Takip Et</h1>
+    <p>Knight Online sunucularındaki BUY ve SELL pazarlarını tek noktadan incele.</p>
+  </section>
+  <div class="controls">
+    <select id="server">
+      <option value="">Tüm Sunucular</option>
+      <option>Zero</option><option>Agartha</option>
+      <option>Felis</option><option>Destan</option>
+      <option>Minark</option><option>Oreads</option>
+    </select>
+    <input id="search" placeholder="Item veya satıcı ara...">
+    <select id="sort">
+      <option value="asc">Fiyat: Artan</option>
+      <option value="desc">Fiyat: Azalan</option>
+    </select>
+  </div>
+  <div class="tabs">
+    <button class="active" data-type="SELL">SELL PAZARI</button>
+    <button data-type="BUY">BUY PAZARI</button>
+  </div>
+  <div class="summary" id="count"></div>
+  <table>
+    <thead><tr><th>Item</th><th>Sunucu</th><th>Fiyat</th><th class="hide-mobile">Satıcı</th><th>Tür</th></tr></thead>
+    <tbody id="list"></tbody>
+  </table>
+</main>
+<footer>USKOMARKET © 2026 · Bu sayfadaki ilanlar test amaçlı örnek verilerdir.</footer>
+<script>
+const listings=[
+ {item:"Shard +8",server:"Zero",price:1250,seller:"WarriorKing",type:"SELL"},
+ {item:"Raptor +8",server:"Zero",price:980,seller:"KarusWar",type:"SELL"},
+ {item:"Iron Necklace",server:"Agartha",price:2200,seller:"Merchant01",type:"SELL"},
+ {item:"Chitin Shell +8",server:"Felis",price:750,seller:"KnightTR",type:"SELL"},
+ {item:"Shard +8",server:"Zero",price:1100,seller:"Buyer01",type:"BUY"},
+ {item:"Raptor +8",server:"Agartha",price:850,seller:"Buyer02",type:"BUY"},
+ {item:"Iron Necklace",server:"Felis",price:1900,seller:"Buyer03",type:"BUY"}
+];
+let active="SELL";
+function render(){
+ const q=document.getElementById("search").value.toLowerCase();
+ const s=document.getElementById("server").value;
+ const sort=document.getElementById("sort").value;
+ let rows=listings.filter(x=>x.type===active&&(!s||x.server===s)&&
+ (x.item.toLowerCase().includes(q)||x.seller.toLowerCase().includes(q)));
+ rows.sort((a,b)=>sort==="asc"?a.price-b.price:b.price-a.price);
+ document.getElementById("count").textContent=rows.length+" test ilanı listeleniyor";
+ document.getElementById("list").innerHTML=rows.map(x=>
+ `<tr><td><b>${x.item}</b></td><td>${x.server}</td><td class="price">${x.price.toLocaleString("tr-TR")} KC</td><td class="hide-mobile">${x.seller}</td><td><span class="type">${x.type}</span></td></tr>`
+ ).join("")||'<tr><td colspan="5">Sonuç bulunamadı.</td></tr>';
+}
+document.querySelectorAll(".tabs button").forEach(b=>b.addEventListener("click",()=>{
+ document.querySelectorAll(".tabs button").forEach(x=>x.classList.remove("active"));
+ b.classList.add("active");active=b.dataset.type;render();
+}));
+["search","server","sort"].forEach(id=>document.getElementById(id).addEventListener("input",render));
+render();
+</script>
+</body>
+</html>
